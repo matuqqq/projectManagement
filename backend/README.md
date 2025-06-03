@@ -31,3 +31,9 @@ DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=pub
 ```bash
 # npx prisma migrate dev --name init
 ```
+
+### Setup prisma provider
+
+```bash
+# npx prisma generate
+```
