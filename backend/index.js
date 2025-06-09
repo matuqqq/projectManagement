@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 
 //import helloworld from "./controllers/helloworld.controller.js";
 import channels from "./routes/channels.routes.js";
+import directMessagesRoutes from "./routes/directMessages.routes.js";
 
 dotenv.config();
 const app = express();
@@ -42,12 +43,13 @@ app.use((req, res, next) => {
     res.locals.notUser = !req.user;
     next();
 });
+//direct messages routes
 
 /*  ROUTES */ 
 
 //app.use("/api/hello", helloworld); // example of the scaffolding, please use it as a reference for your own controllers
 app.use("/api/channels", channels); // now you can use this as a reference for your own controllers, lol
-
+app.use("/api/direct-messages", directMessagesRoutes);
 app.listen(API_PORT, () => {
   console.log(`Server is running on port ${API_PORT}`);
 });
