@@ -19,7 +19,7 @@
   "homepage": "https://github.com/matuqqq/projectManagement#readme",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "^6.9.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -31,6 +31,6 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "prisma": "^6.8.2"
+    "prisma": "^6.9.0"
   }
 }
