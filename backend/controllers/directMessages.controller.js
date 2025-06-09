@@ -12,6 +12,15 @@ const getMessages = async (req, res) => {
 
 const createMessage = async (req, res) => {
     const { senderId, receiverId, content } = req.body;
+    if (!receiverId) {
+        return res.status(400).json({ error: "No hay receptor del mensaje." });
+    }
+    if (!senderId) {
+        return res.status(400).json({ error: "No hay emisor del mensaje." });
+    }
+    if (!content || content.trim() === "") {
+        return res.status(400).json({ error: "El contenido del mensaje no puede estar vacío." });
+    }
     try {
         const message = await directMessagesService().createDirectMessage(senderId, receiverId, content);
         res.status(201).json(message);
