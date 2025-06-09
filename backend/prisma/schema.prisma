@@ -10,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -63,16 +63,16 @@ model Channel {
 }
 
 model Message {
-  id          String         @id @default(uuid())
+  id          String   @id @default(uuid())
   content     String
   channelId   String
-  channel     Channel        @relation(fields: [channelId], references: [id])
+  channel     Channel  @relation(fields: [channelId], references: [id])
   authorId    String
-  author      User           @relation(fields: [authorId], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  edited      Boolean        @default(false)
-  attachments String[]
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  edited      Boolean  @default(false)
+  attachments String?  // Cambiado de String[] a String?
 }
 
 model DirectMessage {
@@ -100,14 +100,14 @@ model ServerMember {
 }
 
 model ServerRole {
-  id          String         @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   serverId    String
-  server      Server         @relation(fields: [serverId], references: [id])
-  permissions String[]       // (ej: ["CREATE_CHANNEL", "DELETE_MESSAGES"])
+  server      Server   @relation(fields: [serverId], references: [id])
+  permissions String?  // Cambiado de String[] a String?
   color       String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   members     ServerMember[]
 }
