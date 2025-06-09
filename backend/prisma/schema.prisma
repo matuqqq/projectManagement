@@ -110,3 +110,15 @@ model ServerRole {
 
   members     ServerMember[]
 }
+
+model ChannelMessage {
+  id          String         @id @default(uuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  channelId   String
+  channel     Channel         @relation(fields: [channelId], references: [id])
+  sendAt      DateTime       @default(now())
+  mesagge     String
+
+  @@unique([userId, serverId])
+}
