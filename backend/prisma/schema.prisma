@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -10,36 +5,36 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql" // Changed from "postgresql" to "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  password      String
-  username      String         @unique
-  avatar        String?
-  bio           String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                      String          @id @default(uuid()) @db.VarChar(36) // Use @db.VarChar(36) for UUIDs in MySQL
+  email                   String          @unique @db.VarChar(255) // Specify length for String fields
+  password                String          @db.VarChar(255)
+  username                String          @unique @db.VarChar(255)
+  avatar                  String?         @db.VarChar(255)
+  bio                     String?         @db.Text // Use @db.Text for potentially longer text
+  createdAt               DateTime        @default(now()) @db.DateTime(0) // Specify precision for DateTime
+  updatedAt               DateTime        @updatedAt @db.DateTime(0)
 
-  servers       ServerMember[]
-  messages      Message[]
-  directMessagesSent DirectMessage[] @relation("SentMessages")
-  directMessagesReceived DirectMessage[] @relation("ReceivedMessages")
-  channels      Channel[]      @relation("ChannelAdmins")
-  ownedServers  Server[]       @relation("ServerOwners")
+  servers                 ServerMember[]
+  messages                Message[]
+  directMessagesSent      DirectMessage[] @relation("SentMessages")
+  directMessagesReceived  DirectMessage[] @relation("ReceivedMessages")
+  channels                Channel[]       @relation("ChannelAdmins")
+  ownedServers            Server[]        @relation("ServerOwners")
 }
 
 model Server {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  icon        String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  ownerId     String
+  id          String         @id @default(uuid()) @db.VarChar(36)
+  name        String         @db.VarChar(255)
+  description String?        @db.Text
+  icon        String?        @db.VarChar(255)
+  createdAt   DateTime       @default(now()) @db.DateTime(0)
+  updatedAt   DateTime       @updatedAt @db.DateTime(0)
+  ownerId     String         @db.VarChar(36)
   owner       User           @relation(fields: [ownerId], references: [id], name: "ServerOwners")
 
   channels    Channel[]
@@ -48,77 +43,77 @@ model Server {
 }
 
 model Channel {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  serverId    String
-  server      Server         @relation(fields: [serverId], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  isPrivate   Boolean        @default(false)
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  serverId    String    @db.VarChar(36)
+  server      Server    @relation(fields: [serverId], references: [id])
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  updatedAt   DateTime  @updatedAt @db.DateTime(0)
+  isPrivate   Boolean   @default(false)
 
   messages    Message[]
-  admins      User[]         @relation("ChannelAdmins")
+  admins      User[]    @relation("ChannelAdmins")
+  // If ChannelMessage is kept, you might need to add it here as well
+  // channelMessages ChannelMessage[]
 }
 
 model Message {
-  id          String         @id @default(uuid())
-  content     String
-  channelId   String
-  channel     Channel        @relation(fields: [channelId], references: [id])
-  authorId    String
-  author      User           @relation(fields: [authorId], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  edited      Boolean        @default(false)
-  attachments String[]
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  content     String   @db.Text
+  channelId   String   @db.VarChar(36)
+  channel     Channel  @relation(fields: [channelId], references: [id])
+  authorId    String   @db.VarChar(36)
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  updatedAt   DateTime @updatedAt @db.DateTime(0)
+  edited      Boolean  @default(false)
+  attachments Json     // Changed from String[] to Json
 }
 
 model DirectMessage {
-  id          String         @id @default(uuid())
-  content     String
-  senderId    String
-  sender      User           @relation(fields: [senderId], references: [id], name: "SentMessages")
-  receiverId  String
-  receiver    User           @relation(fields: [receiverId], references: [id], name: "ReceivedMessages")
-  createdAt   DateTime       @default(now())
-  read        Boolean        @default(false)
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  content     String   @db.Text
+  senderId    String   @db.VarChar(36)
+  sender      User     @relation(fields: [senderId], references: [id], name: "SentMessages")
+  receiverId  String   @db.VarChar(36)
+  receiver    User     @relation(fields: [receiverId], references: [id], name: "ReceivedMessages")
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  read        Boolean  @default(false)
 }
 
 model ServerMember {
-  id          String         @id @default(uuid())
-  userId      String
-  user        User           @relation(fields: [userId], references: [id])
-  serverId    String
-  server      Server         @relation(fields: [serverId], references: [id])
-  joinedAt    DateTime       @default(now())
-  roleId      String?
-  role        ServerRole?    @relation(fields: [roleId], references: [id])
+  id        String       @id @default(uuid()) @db.VarChar(36)
+  userId    String       @db.VarChar(36)
+  user      User         @relation(fields: [userId], references: [id])
+  serverId  String       @db.VarChar(36)
+  server    Server       @relation(fields: [serverId], references: [id])
+  joinedAt  DateTime     @default(now()) @db.DateTime(0)
+  roleId    String?      @db.VarChar(36)
+  role      ServerRole?  @relation(fields: [roleId], references: [id])
 
   @@unique([userId, serverId])
 }
 
 model ServerRole {
-  id          String         @id @default(uuid())
-  name        String
-  serverId    String
+  id          String         @id @default(uuid()) @db.VarChar(36)
+  name        String         @db.VarChar(255)
+  serverId    String         @db.VarChar(36)
   server      Server         @relation(fields: [serverId], references: [id])
-  permissions String[]       // (ej: ["CREATE_CHANNEL", "DELETE_MESSAGES"])
-  color       String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  permissions Json           // Changed from String[] to Json
+  color       String?        @db.VarChar(7) // e.g., for hex color codes
+  createdAt   DateTime       @default(now()) @db.DateTime(0)
+  updatedAt   DateTime       @updatedAt @db.DateTime(0)
 
   members     ServerMember[]
 }
 
 model ChannelMessage {
-  id          String         @id @default(uuid())
-  userId      String
-  user        User           @relation(fields: [userId], references: [id])
-  channelId   String
-  channel     Channel         @relation(fields: [channelId], references: [id])
-  sendAt      DateTime       @default(now())
-  mesagge     String
-
-  @@unique([userId, serverId])
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  userId    String   @db.VarChar(36)
+  // user      User     @relation(fields: [userId], references: [id]) // This line was commented out in your original schema
+  channelId String   @db.VarChar(36)
+  // channel   Channel  @relation(fields: [channelId], references: [id]) // This line was commented out in your original schema
+  sendAt    DateTime @default(now()) @db.DateTime(0)
+  content   String   @db.Text
 }
