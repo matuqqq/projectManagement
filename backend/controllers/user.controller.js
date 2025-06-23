@@ -16,7 +16,17 @@ const loginUser = async (req, res, next) => {
     }    
 }
 
+// Nuevo controlador para obtener usuario por ID
+const getUserById = async (req, res, next) => {
+    try {
+        await usersService().getUserById(req, res);
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default{
     registerUser,
-    loginUser
+    loginUser,
+    getUserById // <-- exporta el nuevo controlador
 };

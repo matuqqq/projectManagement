@@ -62,5 +62,26 @@ export default () => {
         return res.status(500).json({ error: "Error interno en el servidor" });
       }
     },
+        getUserById: async (req, res) => {
+      const { id } = req.params;
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            avatar: true,
+            bio: true
+          }
+        });
+        if (!user) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        return res.json(user);
+      } catch (error) {
+        return res.status(500).json({ error: "Error al buscar el usuario" });
+      }
+    }
   };
 };
