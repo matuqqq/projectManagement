@@ -1,4 +1,4 @@
-import {prisma} from '../prisma/prisma.provider.js';
+import { prisma } from '../prisma/prisma.provider.js';
 
 export default () => {
     return {
@@ -99,7 +99,7 @@ export default () => {
 
         createChannel: async (req, res) => {
             const { name, description, serverId, isPrivate } = req.body;
-            const {userId} = req.params;
+            const { userId } = req.params;
 
             if (!name || !serverId) {
                 return res.status(400).json({
@@ -117,7 +117,13 @@ export default () => {
                             where: {
                                 userId: userId,
                                 OR: [
-                                    { role: { permissions: { has: 'CREATE_CHANNEL' } } },
+                                    {
+                                        role: {
+                                            permissions: {
+                                                hasSome: ['MANAGE_CHANNELS', 'CREATE_CHANNEL']
+                                            }
+                                        }
+                                    },
                                     { server: { ownerId: userId } }
                                 ]
                             }
@@ -153,6 +159,149 @@ export default () => {
                     details: error.message
                 });
             }
+        },
+        updateChanel: async (req, res) => {
+            const { id, userId } = req.query;
+            const { name, description, isPrivate } = req.body;
+
+            if (!id || !userId) {
+                return res.status(400).json({
+                    error: 'Channel ID and User ID are required'
+                });
+            }
+
+            try {
+                const channel = await prisma.channel.findUnique({
+                    where: { id },
+                    include: {
+                        server: {
+                            select: {
+                                ownerId: true,
+                                id: true
+                            }
+                        }
+                    }
+                });
+
+                if (!channel) {
+                    return res.status(404).json({ error: 'Channel not found' });
+                }
+
+                const isOwner = channel.server.ownerId === userId;
+
+                let hasPermissions = isOwner;
+                if (!isOwner) {
+                    const memberWithPermissions = await prisma.serverMember.findFirst({
+                        where: {
+                            userId: userId,
+                            serverId: channel.server.id,
+                            role: {
+                                permissions: {
+                                    hasSome: ['MANAGE_CHANNELS', 'CREATE_CHANNEL']
+                                }
+                            }
+                        }
+                    });
+                    hasPermissions = !!memberWithPermissions;
+                }
+
+                if (!hasPermissions) {
+                    return res.status(403).json({
+                        error: 'You do not have permission to update this channel'
+                    });
+                }
+
+                const updatedChannel = await prisma.channel.update({
+                    where: { id },
+                    data: { name, description, isPrivate }
+                });
+
+                return res.status(200).json(updatedChannel);
+            } catch (error) {
+                return res.status(500).json({
+                    error: 'Error updating channel',
+                    details: error.message
+                });
+            }
+        },
+        deleteChannel: async (req, res) => {
+            const { id } = req.params;
+            const { userId } = req.query;
+
+            if (!id || !userId) {
+                return res.status(400).json({
+                    error: 'Channel ID and User ID are required'
+                });
+            }
+
+            try {
+                const channel = await prisma.channel.findUnique({
+                    where: { id },
+                    include: {
+                        server: {
+                            select: {
+                                ownerId: true,
+                                id: true
+                            }
+                        },
+                        messages: {
+                            select: {
+                                id: true
+                            }
+                        }
+                    }
+                });
+
+                if (!channel) {
+                    return res.status(404).json({ error: 'Channel not found' });
+                }
+
+                const isOwner = channel.server.ownerId === userId;
+
+
+                let hasPermissions = isOwner;
+                if (!isOwner) {
+                    const memberWithPermissions = await prisma.serverMember.findFirst({
+                        where: {
+                            userId: userId,
+                            serverId: channel.server.id,
+                            role: {
+                                permissions: {
+                                    hasSome: ['MANAGE_CHANNELS', 'DELETE_CHANNEL']
+                                }
+                            }
+                        }
+                    });
+                    hasPermissions = !!memberWithPermissions;
+                }
+
+                if (!hasPermissions) {
+                    return res.status(403).json({
+                        error: 'You do not have permission to delete this channel'
+                    });
+                }
+
+                if (channel.messages.length > 0) {
+                    await prisma.message.deleteMany({
+                        where: {
+                            channelId: id
+                        }
+                    });
+                }
+
+                await prisma.channel.delete({
+                    where: { id }
+                });
+
+                return res.status(200).json({
+                    message: 'Channel deleted successfully'
+                });
+            } catch (error) {
+                return res.status(500).json({
+                    error: 'Error deleting channel',
+                    details: error.message
+                });
+            }
         }
-    };
+    }
 };
