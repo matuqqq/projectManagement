@@ -1,3 +1,9 @@
+body {
+  margin: 0;
+  background: #36393f;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -35,4 +41,72 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.discord-app {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 72px;
+  background: #202225;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-icon {
+  width: 48px;
+  height: 48px;
+  margin: 8px 0;
+  background: #36393f;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b9bbbe;
+  font-size: 24px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-icon.dm {
+  background: #5865f2;
+  color: #fff;
+}
+
+.sidebar-icon.active,
+.sidebar-icon:hover {
+  background: #5865f2;
+  color: #fff;
+}
+
+.sidebar-divider {
+  width: 32px;
+  height: 2px;
+  background: #2f3136;
+  margin: 12px 0;
+  border-radius: 1px;
+}
+
+.server-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  background: #36393f;
+  padding: 32px;
 }
