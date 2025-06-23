@@ -55,6 +55,7 @@ app.use("/api/channels", channels); // now you can use this as a reference for y
 app.use("/api/user", (users));
 app.use("/api/direct-messages", directMessagesRoutes);
 
+
 app.listen(API_PORT, () => {
   console.log(`Server is running on port ${API_PORT}`);
 });
