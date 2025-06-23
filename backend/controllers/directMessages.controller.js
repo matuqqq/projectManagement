@@ -29,7 +29,33 @@ const createMessage = async (req, res) => {
     }
 };
 
+const updateMessage = async (req, res) => {
+    const { id } = req.params;
+    const { content } = req.body;
+    if (!content || content.trim() === "") {
+        return res.status(400).json({ error: "El contenido del mensaje no puede estar vacío." });
+    }
+    try {
+        const updated = await directMessagesService().updateDirectMessage(id, content);
+        res.json(updated);
+    } catch (err) {
+        res.status(404).json({ error: 'Mensaje no encontrado o error actualizando.' });
+    }
+};
+
+const deleteMessage = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await directMessagesService().deleteDirectMessage(id);
+        res.json({ message: "Mensaje eliminado correctamente." });
+    } catch (err) {
+        res.status(404).json({ error: 'Mensaje no encontrado o error eliminando.' });
+    }
+};
+
 export default {
     getMessages,
-    createMessage
+    createMessage,
+    updateMessage,
+    deleteMessage
 };

@@ -17,5 +17,16 @@ export default () => ({
         return prisma.directMessage.create({
             data: { senderId, receiverId, content }
         });
+    },
+
+        updateDirectMessage: async (id, content) => {
+        return prisma.directMessage.update({
+            where: { id },
+            data: { content }
+        });
+    },
+
+    deleteDirectMessage: async (id) => {
+        return prisma.directMessage.delete({ where: { id } });
     }
 });
