@@ -10,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -104,7 +104,7 @@ model ServerRole {
   name        String
   serverId    String
   server      Server   @relation(fields: [serverId], references: [id])
-  permissions String?  // Cambiado de String[] a String?
+  permissions String[]
   color       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

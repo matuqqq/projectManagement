@@ -25,8 +25,26 @@ const createChannel = async (req, res, next) => {
 };
 
 
+const updateChannel = async (req, res, next) => {
+    try{
+        await channelsService().updateChanel(req, res);
+    }catch(erorr){
+        next(error);
+    }
+}
+
+const deleteChannel = async (req, res, next) => {
+    try{
+        await channelsService().deleteChannel(req, res);
+    }catch(erorr){
+        next(error);
+    }
+}
+
 export default {
     getAllChannels,
     getChannelById,
-    createChannel
+    createChannel,
+    updateChannel,
+    deleteChannel
 };
