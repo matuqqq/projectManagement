@@ -10,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      =  env("DATABASE_URL")
 }
 
 model User {
@@ -30,7 +30,7 @@ model User {
   directMessagesReceived DirectMessage[] @relation("ReceivedMessages")
   channels      Channel[]      @relation("ChannelAdmins")
   ownedServers  Server[]       @relation("ServerOwners")
-  refreshTokens RefreshToken[]
+  refreshTokens RefreshToken[] 
 }
 
 model Server {
@@ -116,6 +116,6 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
