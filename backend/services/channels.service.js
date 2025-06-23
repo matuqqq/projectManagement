@@ -268,6 +268,7 @@ export default () => {
                             role: {
                                 permissions: {
                                     hasSome: ['MANAGE_CHANNELS', 'DELETE_CHANNEL']
+                                }
                             }
                         }
                     });
