@@ -99,7 +99,7 @@ export default () => {
 
         createChannel: async (req, res) => {
             const { name, description, serverId, isPrivate } = req.body;
-            const userId = req.user?.id;
+            const {userId} = req.params;
 
             if (!name || !serverId) {
                 return res.status(400).json({
