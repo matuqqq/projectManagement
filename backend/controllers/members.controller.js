@@ -1,15 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const membersService = require('./members.service');
 
+// GET /miembros
 exports.obtenerMiembros = async (req, res) => {
   try {
-    const miembros = await prisma.serverMember.findMany({
-      include: {
-        user: true,
-        server: true,
-        role: true,
-      },
-    });
+    const miembros = await membersService.obtenerMiembros();
     res.json(miembros);
   } catch (error) {
     console.error('Error al obtener miembros:', error);
@@ -17,6 +11,7 @@ exports.obtenerMiembros = async (req, res) => {
   }
 };
 
+// POST /miembros
 exports.crearMiembro = async (req, res) => {
   const { userId, serverId, roleId } = req.body;
 
@@ -25,13 +20,7 @@ exports.crearMiembro = async (req, res) => {
   }
 
   try {
-    const nuevoMiembro = await prisma.serverMember.create({
-      data: {
-        userId,
-        serverId,
-        roleId, // puede ser null
-      },
-    });
+    const nuevoMiembro = await membersService.crearMiembro({ userId, serverId, roleId });
     res.status(201).json(nuevoMiembro);
   } catch (error) {
     console.error('Error al crear miembro:', error);
