@@ -1,7 +1,7 @@
-const membersService = require('./members.service');
+import membersService from '../services/members.service.js';
 
 // GET /miembros
-exports.obtenerMiembros = async (req, res) => {
+const obtenerMiembros = async (req, res) => {
   try {
     const miembros = await membersService.obtenerMiembros();
     res.json(miembros);
@@ -12,7 +12,7 @@ exports.obtenerMiembros = async (req, res) => {
 };
 
 // POST /miembros
-exports.crearMiembro = async (req, res) => {
+const crearMiembro = async (req, res) => {
   const { userId, serverId, roleId } = req.body;
 
   if (!userId || !serverId) {
@@ -29,4 +29,9 @@ exports.crearMiembro = async (req, res) => {
     }
     res.status(500).json({ error: 'Error al crear miembro del servidor' });
   }
+};
+
+export default {
+  obtenerMiembros,
+  crearMiembro
 };

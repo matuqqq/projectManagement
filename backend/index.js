@@ -15,7 +15,7 @@ import directMessagesRoutes from "./routes/directMessages.routes.js";
 
 dotenv.config();
 const app = express();
-const API_PORT = process.env.PORT || 3000;
+const API_PORT = process.env.PORT || 3001;
 
 app.use(helmet());
 app.use(cors());
@@ -46,7 +46,7 @@ app.use((req, res, next) => {
     next();
 });
 
-/*  ROUTES */ 
+/*  ROUTES */
 
 //app.use("/api/hello", helloworld); // example of the scaffolding, please use it as a reference for your own controllers
 app.use("/api/channels", channels); // now you can use this as a reference for your own controllers, lol
