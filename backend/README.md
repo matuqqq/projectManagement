@@ -14,6 +14,8 @@ DATABASE_PORT=5432
 DATABASE_NAME=postgres
 DATABASE_USER=postgres
 DATABASE_PASSWORD=root
+TOKEN_SECRET=SECRET_KEY
+REFRESH_TOKEN_SECRET=SECRET_KEY_REFRESH
 
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 ```
