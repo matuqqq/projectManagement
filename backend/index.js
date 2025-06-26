@@ -7,13 +7,15 @@ import passport from "passport";
 import helmet from "helmet";
 import dotenv from "dotenv";
 
-//import helloworld from "./controllers/helloworld.controller.js";
+// import helloworld from "./controllers/helloworld.controller.js";
 import channels from "./routes/channels.routes.js";
-
+import members from "./routes/members.routes.js";
+import users from "./routes/users.routes.js";
+import directMessagesRoutes from "./routes/directMessages.routes.js";
 
 dotenv.config();
 const app = express();
-const API_PORT = process.env.PORT || 3000;
+const API_PORT = process.env.PORT || 3001;
 
 app.use(helmet());
 app.use(cors());
@@ -44,10 +46,14 @@ app.use((req, res, next) => {
     next();
 });
 
-/*  ROUTES */ 
+/*  ROUTES */
 
 //app.use("/api/hello", helloworld); // example of the scaffolding, please use it as a reference for your own controllers
 app.use("/api/channels", channels); // now you can use this as a reference for your own controllers, lol
+app.use("/api/members", members);
+app.use("/api/user", (users));
+app.use("/api/direct-messages", directMessagesRoutes);
+
 
 
 app.listen(API_PORT, () => {

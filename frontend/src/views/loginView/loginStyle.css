@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  background-color: #1e1e1e;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-top: 60px;
+  margin-bottom: 10px;
+  color: #f0f0f0;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #aaaaaa;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  background-color: #2a2a2a;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.input {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #333;
+  color: #f0f0f0;
+  font-size: 1rem;
+}
+
+.input::placeholder {
+  color: #aaaaaa;
+}
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-container .input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 20px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #aaaaaa;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.error {
+  color: #f44336;
+  font-size: 0.85rem;
+  margin-top: -6px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.submit-button,
+.register-button {
+  padding: 10px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.register-button {
+  background-color: #2196f3;
+}
+
+.submit-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}

@@ -1,5 +1,9 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginView from "./views/registerView/registerView";
+import RegisterView from "./views/loginView/loginView";
+import HomeView from "./views/homeView/homeView";
 
 function App() {
   const [channels, setChannels] = useState([]);
@@ -18,31 +22,14 @@ function App() {
   }, [serverId]);
 
   return (
-    <div className="discord-app">
-      <nav className="sidebar">
-        <div className="sidebar-top">
-          <div className="sidebar-icon dm">
-            <span>💬</span>
-          </div>
-          <div className="sidebar-divider" />
-        </div>
-        <div className="server-list">
-          {loading ? (
-            <div style={{ color: "#fff" }}>Cargando...</div>
-          ) : (
-            channels.map(channel => (
-              <div className="sidebar-icon" key={channel.id} title={channel.name}>
-                <span>#{channel.name}</span>
-              </div>
-            ))
-          )}
-        </div>
-      </nav>
-      <main className="main-content">
-        <h1 style={{ color: "#fff" }}>Bienvenido a tu clon de Discord</h1>
-      </main>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginView />} />
+        <Route path="/register" element={<RegisterView/>} />
+        <Route path="/home" element={<HomeView/>} />
+      </Routes>
+    </Router>
   );
 }
 
-export default App;
+export default App;

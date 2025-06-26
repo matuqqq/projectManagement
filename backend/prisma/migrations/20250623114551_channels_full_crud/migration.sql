@@ -47,7 +47,7 @@ CREATE TABLE "Message" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "edited" BOOLEAN NOT NULL DEFAULT false,
-    "attachments" TEXT[],
+    "attachments" TEXT,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
 );
@@ -80,7 +80,7 @@ CREATE TABLE "ServerRole" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "serverId" TEXT NOT NULL,
-    "permissions" TEXT[],
+    "permissions" TEXT,
     "color" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -89,15 +89,13 @@ CREATE TABLE "ServerRole" (
 );
 
 -- CreateTable
-CREATE TABLE "SearchFilter" (
+CREATE TABLE "RefreshToken" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "parameters" JSONB NOT NULL,
+    "token" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "isFavorite" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "SearchFilter_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -116,6 +114,9 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ServerMember_userId_serverId_key" ON "ServerMember"("userId", "serverId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
 
 -- CreateIndex
 CREATE INDEX "_ChannelAdmins_B_index" ON "_ChannelAdmins"("B");
@@ -151,7 +152,7 @@ ALTER TABLE "ServerMember" ADD CONSTRAINT "ServerMember_roleId_fkey" FOREIGN KEY
 ALTER TABLE "ServerRole" ADD CONSTRAINT "ServerRole_serverId_fkey" FOREIGN KEY ("serverId") REFERENCES "Server"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SearchFilter" ADD CONSTRAINT "SearchFilter_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ChannelAdmins" ADD CONSTRAINT "_ChannelAdmins_A_fkey" FOREIGN KEY ("A") REFERENCES "Channel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
