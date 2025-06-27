@@ -119,7 +119,7 @@ export default () => {
                                 OR: [
                                     {
                                         role: {
-                                            permissions: {
+                                            ServerRolePermission: {
                                                 hasSome: ['MANAGE_CHANNELS', 'CREATE_CHANNEL']
                                             }
                                         }
@@ -196,7 +196,7 @@ export default () => {
                             userId: userId,
                             serverId: channel.server.id,
                             role: {
-                                permissions: {
+                                ServerRolePermission: {
                                     hasSome: ['MANAGE_CHANNELS', 'CREATE_CHANNEL']
                                 }
                             }
@@ -266,7 +266,7 @@ export default () => {
                             userId: userId,
                             serverId: channel.server.id,
                             role: {
-                                permissions: {
+                                ServerRolePermission: {
                                     hasSome: ['MANAGE_CHANNELS', 'DELETE_CHANNEL']
                                 }
                             }
