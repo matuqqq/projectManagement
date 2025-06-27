@@ -10,6 +10,10 @@ export const handleLogin = async (email, password, navigate) => {
     if (res.success === true) {
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
+      if (res.user) {
+        localStorage.setItem("user", JSON.stringify(res.user));
+      }
+
       navigate("/home");
       return { success: true };
     }
