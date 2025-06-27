@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma/prisma.provider.js";
 
@@ -15,6 +18,7 @@ export default () => {
     },
 
     generateRefreshToken: async (user) => {
+      console.log("Generating refresh token for user:", user.id);
       const token = jwt.sign(
         { userId: user.id },
         REFRESH_SECRET

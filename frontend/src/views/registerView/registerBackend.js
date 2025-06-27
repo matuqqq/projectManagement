@@ -1,6 +1,7 @@
 import { sendPost } from "../../connections/backendConnect";
 
 export const handleRegister = async (values, navigate) => {
+ 
   const { email, password, username } = values;
   try {
     const res = await sendPost("/user/register", { email, password, username });
@@ -10,7 +11,10 @@ export const handleRegister = async (values, navigate) => {
       if (res.accessToken) localStorage.setItem("accessToken", res.accessToken);
       if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
 
-      navigate("/");
+      localStorage.setItem("user", JSON.stringify(res.user || { email, username }));
+
+
+      navigate("/home");
       return { success: true };
     }
 

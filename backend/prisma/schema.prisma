@@ -6,11 +6,10 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      =  env("DATABASE_URL")
 }
 
@@ -100,17 +99,25 @@ model ServerMember {
 }
 
 model ServerRole {
-  id          String   @id @default(uuid())
+  id          String                  @id @default(uuid())
   name        String
   serverId    String
-  server      Server   @relation(fields: [serverId], references: [id])
-  permissions String[]
+  server      Server                  @relation(fields: [serverId], references: [id])
   color       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
 
   members     ServerMember[]
+  ServerRolePermission ServerRolePermission[] 
 }
+
+model ServerRolePermission {
+  id      String      @id @default(uuid())
+  role    ServerRole  @relation(fields: [roleId], references: [id])
+  roleId  String
+  value   String       // Example: MANAGE_CHANNELS
+}
+
 
 model RefreshToken {
   id        String   @id @default(uuid())

@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -5,7 +8,6 @@ import session from 'express-session';
 import MySQLStoreModule from 'express-mysql-session';
 import passport from "passport";
 import helmet from "helmet";
-import dotenv from "dotenv";
 
 // import helloworld from "./controllers/helloworld.controller.js";
 import channels from "./routes/channels.routes.js";
@@ -13,7 +15,6 @@ import members from "./routes/members.routes.js";
 import users from "./routes/users.routes.js";
 import directMessagesRoutes from "./routes/directMessages.routes.js";
 
-dotenv.config();
 const app = express();
 const API_PORT = process.env.PORT || 3001;
 

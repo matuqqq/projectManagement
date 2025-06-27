@@ -36,15 +36,13 @@ export default () => {
         const accessToken = tokens.generateAccessToken(newUser);
         const refreshToken = await tokens.generateRefreshToken(newUser);
 
-        return res.status(201).json(
-          {
-            ...userWithoutPassword,
-            accessToken,
-            refreshToken,
-            message: "Usuario creado correctamente",
-            success: true,
-          }
-        );
+        return res.status(201).json({
+          user: userWithoutPassword,
+          accessToken,
+          refreshToken,
+          message: "Usuario creado correctamente",
+          success: true,
+        });
       } catch (error) {
         return res.status(500).json({ error: "Error al crear el usuario" });
       }

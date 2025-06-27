@@ -35,7 +35,7 @@ export default function LoginView() {
         onSubmit={async (values, { setFieldError }) => {
           if (loading) return;
           setLoading(true);
-          setGeneralError(""); // Limpiar error general antes del envío
+          setGeneralError(""); 
           setFieldErrorRef.current = setFieldError;
 
           try {

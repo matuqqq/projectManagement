@@ -46,6 +46,7 @@ export default function RegisterView() {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { setFieldError }) => {
+       
           if (loading) return;
           setLoading(true);
           setGeneralError("");
