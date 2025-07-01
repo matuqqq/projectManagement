@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      =  env("DATABASE_URL")
 }
 
@@ -29,7 +29,7 @@ model User {
   directMessagesReceived DirectMessage[] @relation("ReceivedMessages")
   channels      Channel[]      @relation("ChannelAdmins")
   ownedServers  Server[]       @relation("ServerOwners")
-  refreshTokens RefreshToken[] 
+  refreshTokens RefreshToken[]
 }
 
 model Server {
@@ -108,7 +108,7 @@ model ServerRole {
   updatedAt   DateTime                @updatedAt
 
   members     ServerMember[]
-  ServerRolePermission ServerRolePermission[] 
+  ServerRolePermission ServerRolePermission[]
 }
 
 model ServerRolePermission {
