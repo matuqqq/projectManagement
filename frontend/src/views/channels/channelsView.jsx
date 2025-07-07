@@ -1,203 +1,295 @@
-import { useState } from "react"
-import { Loader2, Hash, Lock, Globe, Calendar, Server, Search } from "lucide-react"
-import './channelsView.css'; // Import the CSS file
+import { useState, useEffect } from "react"
+import { Hash, Lock, Volume2, Users, Settings, Plus, ChevronDown } from "lucide-react"
+import './channelsView.css';
 
 export default function ChannelsView() {
   const API_URL = process.env.REACT_APP_URLAPI;
 
+  const [servers, setServers] = useState([])
+  const [selectedServer, setSelectedServer] = useState(null)
   const [channels, setChannels] = useState([])
-  const [serverId, setServerId] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedChannel, setSelectedChannel] = useState(null)
+  const [isLoadingServers, setIsLoadingServers] = useState(true)
+  const [isLoadingChannels, setIsLoadingChannels] = useState(false)
   const [error, setError] = useState(null)
 
-  const fetchChannels = async () => {
-    if (!serverId.trim()) return
+  const fetchServers = async () => {
+    try {
+      const response = await fetch(`${API_URL}/servers`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch servers")
+      }
+      const data = await response.json()
+      setServers(data.data)
+    } catch (error) {
+      console.error("Error fetching servers:", error)
+      setError(error.message)
+    } finally {
+      setIsLoadingServers(false)
+    }
+  }
 
-    setIsLoading(true)
+  const fetchChannels = async (serverId) => {
+    setIsLoadingChannels(true)
     setError(null)
 
     try {
       const response = await fetch(`${API_URL}/channels?serverId=${serverId}`)
-
       if (!response.ok) {
-        throw new Error("Network response was not ok")
+        throw new Error("Failed to fetch channels")
       }
-
       const data = await response.json()
-      setChannels(data.data)
+      
+      // Add mock unread counts and connected users for demo purposes
+      const channelsWithMockData = data.data.map((channel, index) => ({
+        ...channel,
+        unreadCount: channel.isVoice ? undefined : Math.floor(Math.random() * 10),
+        connectedUsers: channel.isVoice ? Math.floor(Math.random() * 5) : undefined
+      }))
+      
+      setChannels(channelsWithMockData)
+      
+      // Auto-select the first text channel when loading channels
+      const firstTextChannel = channelsWithMockData.find(channel => !channel.isVoice)
+      if (firstTextChannel) {
+        setSelectedChannel(firstTextChannel)
+      }
     } catch (error) {
       console.error("Error fetching channels:", error)
-      setError(error instanceof Error ? error.message : "An error occurred")
+      setError(error.message)
     } finally {
-      setIsLoading(false)
+      setIsLoadingChannels(false)
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    fetchChannels()
+  const handleServerClick = (server) => {
+    setSelectedServer(server)
+    setSelectedChannel(null) // Reset selected channel when switching servers
+    fetchChannels(server.id)
   }
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
+  const handleChannelClick = (channel) => {
+    setSelectedChannel(channel)
+    
+    // Simulate marking channel as read (clear unread count)
+    if (channel.unreadCount && channel.unreadCount > 0) {
+      setChannels(prevChannels => 
+        prevChannels.map(ch => 
+          ch.id === channel.id 
+            ? { ...ch, unreadCount: 0 }
+            : ch
+        )
+      )
+    }
   }
+
+  useEffect(() => {
+    fetchServers()
+  }, [])
 
   return (
-    <div className="channels-view-container">
-      <div className="channels-view-content">
-        {/* Header */}
-        <div className="header-section">
-          <div className="header-title-container">
-            <div className="header-icon">
-              <Server className="server-icon" />
+    <div className="discord-layout">
+      {/* Server Sidebar */}
+      <div className="server-sidebar">
+        <div className="server-list">
+          {isLoadingServers ? (
+            <div className="loading-placeholder">
+              <div className="loading-spinner"></div>
             </div>
-            <h1 className="header-text">Server Channels</h1>
-          </div>
-          <p className="header-subtext">Discover and explore channels in your Discord server</p>
-        </div>
-
-        {/* Search Form */}
-        <div className="search-container">
-          <div className="search-header">
-            <h2 className="search-title">
-              <Search className="search-icon" />
-              Find Server Channels
-            </h2>
-            <p className="search-description">Enter a server ID to view all available channels</p>
-          </div>
-          <div className="search-form-container">
-            <form onSubmit={handleSubmit} className="search-form">
-              <input
-                type="text"
-                value={serverId}
-                onChange={(e) => setServerId(e.target.value)}
-                placeholder="Enter Server ID (e.g., 123456789012345678)"
-                className="search-input"
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !serverId.trim()}
-                className={`search-button ${(isLoading || !serverId.trim()) ? 'disabled-button' : ''}`}
+          ) : (
+            servers.map((server) => (
+              <div
+                key={server.id}
+                className={`server-item ${selectedServer?.id === server.id ? 'selected' : ''}`}
+                onClick={() => handleServerClick(server)}
+                title={server.name}
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="loading-icon" />
-                    Loading...
-                  </>
+                {server.icon ? (
+                  <img src={server.icon} alt={server.name} className="server-icon" />
                 ) : (
-                  "Get Channels"
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Error State */}
-        {error && (
-          <div className="error-container">
-            <div className="error-content">
-              <div className="error-indicator" />
-              Error: {error}
-            </div>
-          </div>
-        )}
-
-        {/* Channels Results */}
-        {channels.length > 0 && (
-          <div className="channels-results">
-            <div className="results-header">
-              <h2 className="results-title">Channels in {channels[0].server.name}</h2>
-              <span className="results-count">
-                {channels.length} {channels.length === 1 ? "channel" : "channels"} found
-              </span>
-            </div>
-
-            <div className="channels-grid">
-              {channels.map((channel, index) => (
-                <div
-                  key={channel.id}
-                  className="channel-card"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animation: "fadeInUp 0.5s ease-out forwards",
-                  }}
-                >
-                  <div className="channel-content">
-                    <div className="channel-header">
-                      <div className="channel-info">
-                        <div className="channel-icon-container">
-                          {channel.isPrivate ? (
-                            <Lock className="private-channel-icon" />
-                          ) : (
-                            <Hash className="public-channel-icon" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="channel-name">{channel.name}</h3>
-                          <div className="channel-status-container">
-                            <span
-                              className={`channel-status ${channel.isPrivate ? 'private-status' : 'public-status'}`}
-                            >
-                              {channel.isPrivate ? (
-                                <>
-                                  <Lock className="status-icon" />
-                                  Private
-                                </>
-                              ) : (
-                                <>
-                                  <Globe className="status-icon" />
-                                  Public
-                                </>
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="channel-date">
-                        <Calendar className="calendar-icon" />
-                        {formatDate(channel.createdAt)}
-                      </div>
-                    </div>
-
-                    {channel.description && (
-                      <>
-                        <div className="channel-divider"></div>
-                        <div className="channel-description-container">
-                          <h4 className="description-title">Description</h4>
-                          <p className="description-text">{channel.description}</p>
-                        </div>
-                      </>
-                    )}
+                  <div className="server-icon-placeholder">
+                    {server.name.charAt(0).toUpperCase()}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
 
-        {/* No Results State */}
-        {!isLoading && !error && serverId && channels.length === 0 && (
-          <div className="no-results-container">
-            <div className="no-results-content">
-              <div className="no-results-inner">
-                <div className="no-results-icon-container">
-                  <Search className="no-results-icon" />
+      {/* Channels Sidebar */}
+      <div className="channels-sidebar">
+        {selectedServer ? (
+          <>
+            {/* Server Header */}
+            <div className="server-header">
+              <h2 className="server-name">{selectedServer.name}</h2>
+              <ChevronDown className="server-dropdown-icon" />
+            </div>
+
+            {/* Channels List */}
+            <div className="channels-list">
+              {isLoadingChannels ? (
+                <div className="channels-loading">
+                  <div className="loading-spinner"></div>
+                  <span>Loading channels...</span>
                 </div>
-                <div>
-                  <h3 className="no-results-title">No channels found</h3>
-                  <p className="no-results-message">
-                    No channels were found for this server ID. Please check the ID and try again.
-                  </p>
+              ) : channels.length > 0 ? (
+                <>
+                  <div className="channel-category">
+                    <div className="category-header">
+                      <ChevronDown className="category-icon" />
+                      <span className="category-name">TEXT CHANNELS</span>
+                      <Plus className="add-channel-icon" />
+                    </div>
+                    {channels.filter(channel => !channel.isVoice).map((channel) => (
+                      <div 
+                        key={channel.id} 
+                        className={`channel-item ${selectedChannel?.id === channel.id ? 'selected' : ''}`}
+                        onClick={() => handleChannelClick(channel)}
+                      >
+                        {channel.isPrivate ? (
+                          <Lock className="channel-icon" />
+                        ) : (
+                          <Hash className="channel-icon" />
+                        )}
+                        <span className="channel-name">{channel.name}</span>
+                        {channel.unreadCount && channel.unreadCount > 0 && (
+                          <div className="unread-badge">
+                            {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="channel-category">
+                    <div className="category-header">
+                      <ChevronDown className="category-icon" />
+                      <span className="category-name">VOICE CHANNELS</span>
+                      <Plus className="add-channel-icon" />
+                    </div>
+                    {channels.filter(channel => channel.isVoice).map((channel) => (
+                      <div 
+                        key={channel.id} 
+                        className={`channel-item voice-channel ${selectedChannel?.id === channel.id ? 'selected' : ''}`}
+                        onClick={() => handleChannelClick(channel)}
+                      >
+                        <Volume2 className="channel-icon" />
+                        <span className="channel-name">{channel.name}</span>
+                        <div className="voice-info">
+                          {channel.connectedUsers && channel.connectedUsers > 0 && (
+                            <span className="connected-users">{channel.connectedUsers}</span>
+                          )}
+                          <Users className="voice-users-icon" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="no-channels">
+                  <p>No channels found in this server.</p>
+                </div>
+              )}
+            </div>
+
+            {/* User Panel */}
+            <div className="user-panel">
+              <div className="user-info">
+                <div className="user-avatar"></div>
+                <div className="user-details">
+                  <span className="username">User</span>
+                  <span className="user-status">Online</span>
                 </div>
               </div>
+              <div className="user-controls">
+                <Settings className="control-icon" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="no-server-selected">
+            <h3>Select a Server</h3>
+            <p>Choose a server from the sidebar to view its channels.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Main Content Area */}
+      <div className="main-content">
+        {selectedServer ? (
+          <div className="channel-content">
+            <div className="channel-header">
+              {selectedChannel ? (
+                <>
+                  {selectedChannel.isVoice ? (
+                    <Volume2 className="current-channel-icon" />
+                  ) : selectedChannel.isPrivate ? (
+                    <Lock className="current-channel-icon" />
+                  ) : (
+                    <Hash className="current-channel-icon" />
+                  )}
+                  <span className="current-channel-name">{selectedChannel.name}</span>
+                  {selectedChannel.description && (
+                    <span className="channel-description">— {selectedChannel.description}</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Hash className="current-channel-icon" />
+                  <span className="current-channel-name">Select a channel</span>
+                </>
+              )}
+            </div>
+            <div className="messages-area">
+              {selectedChannel ? (
+                <div className="welcome-message">
+                  <h2>Welcome to {selectedChannel.isVoice ? '' : '#'}{selectedChannel.name}!</h2>
+                  <p>This is the beginning of the {selectedChannel.isVoice ? '' : '#'}{selectedChannel.name} {selectedChannel.isVoice ? 'voice channel' : 'channel'}.</p>
+                  {selectedChannel.description && (
+                    <p className="channel-description-detail">{selectedChannel.description}</p>
+                  )}
+                  {selectedChannel.isVoice && (
+                    <div className="voice-channel-info">
+                      <Users className="voice-icon" />
+                      <span>
+                        {selectedChannel.connectedUsers && selectedChannel.connectedUsers > 0
+                          ? `${selectedChannel.connectedUsers} user${selectedChannel.connectedUsers !== 1 ? 's' : ''} connected`
+                          : 'No one is currently in this voice channel'
+                        }
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="no-channel-selected">
+                  <div className="no-channel-content">
+                    <Hash className="no-channel-icon" />
+                    <h3>No channel selected</h3>
+                    <p>Select a channel from the sidebar to start chatting!</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="no-content">
+            <div className="no-content-inner">
+              <h2>Welcome to Discord Clone</h2>
+              <p>Select a server and channel to start chatting!</p>
             </div>
           </div>
         )}
       </div>
+
+      {/* Error Toast */}
+      {error && (
+        <div className="error-toast">
+          <span>Error: {error}</span>
+          <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
     </div>
   )
 }

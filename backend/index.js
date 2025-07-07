@@ -17,6 +17,7 @@ import users from "./routes/users.routes.js";
 import directMessagesRoutes from "./routes/directMessages.routes.js";
 import roles from "./routes/roles.routes.js";
 import { authenticateToken } from "./middleware/auth.middleware.js";
+import servers from "./routes/servers.routes.js";
 
 const app = express();
 const API_PORT = process.env.PORT || 3001;
@@ -69,18 +70,19 @@ app.use("/api/members", authenticateToken, members);
 app.use("/api/user", users); // Login/register routes don't need auth
 app.use("/api/direct-messages", authenticateToken, directMessagesRoutes);
 app.use("/api/roles", authenticateToken, roles);
+app.use("/api/servers",authenticateToken, servers);
 
 // Global error handler
 app.use((error, req, res, next) => {
   console.error('Global error handler:', error);
-  
+
   if (error.code === 'PERMISSION_CHECK_ERROR') {
     return res.status(500).json({
       error: 'Internal server error while checking permissions',
       code: 'INTERNAL_ERROR'
     });
   }
-  
+
   res.status(500).json({
     error: 'Internal server error',
     code: 'INTERNAL_ERROR'
