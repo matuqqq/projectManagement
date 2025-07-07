@@ -40,6 +40,42 @@ export const sendPatch = async (route, data = undefined, token) => {
   }
 };
 
+export const sendPut = async (route, data = undefined, token) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const { data: apiResponse } = await axios.put(`${URLAPI}${route}`, data, {
+      headers,
+      timeout: 10000,
+    });
+
+    return apiResponse;
+  } catch (error) {
+    return processError(error);
+  }
+};
+
+export const sendDelete = async (route, token) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const { data: apiResponse } = await axios.delete(`${URLAPI}${route}`, {
+      headers,
+      timeout: 10000,
+    });
+
+    return apiResponse;
+  } catch (error) {
+    return processError(error);
+  }
+};
+
 export const sendGet = async (route, params = {}, token) => {
   try {
     const headers = {

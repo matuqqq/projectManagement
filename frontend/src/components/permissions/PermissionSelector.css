@@ -1,0 +1,254 @@
+.permission-selector {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+}
+
+.permission-selector-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.header-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #9333ea;
+}
+
+.permission-selector-header h3 {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.selected-count {
+  background: rgba(147, 51, 234, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.permission-selector-loading,
+.permission-selector-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: #94a3b8;
+}
+
+.loading-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.permission-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.permission-category {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid #1e293b;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.3);
+  border-bottom: 1px solid #1e293b;
+}
+
+.category-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 1;
+  text-align: left;
+}
+
+.category-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.toggle-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #94a3b8;
+}
+
+.category-name {
+  flex: 1;
+}
+
+.category-count {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.select-all-btn {
+  background: #334155;
+  color: white;
+  border: 1px solid #475569;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.select-all-btn:hover:not(:disabled) {
+  background: #475569;
+}
+
+.select-all-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.select-all-btn.all-selected {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.select-all-btn.all-selected:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.select-all-btn.some-selected {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #000;
+}
+
+.select-all-btn.some-selected:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.category-permissions {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.permission-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.permission-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.permission-label.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.permission-checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  accent-color: #9333ea;
+  cursor: pointer;
+}
+
+.permission-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.permission-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.permission-name {
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.permission-description {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.description-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.administrator-warning {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 0.375rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.warning-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #ef4444;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.administrator-warning strong {
+  color: #fecaca;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.administrator-warning p {
+  color: #fca5a5;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}

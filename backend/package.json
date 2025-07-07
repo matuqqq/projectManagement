@@ -25,6 +25,7 @@
     "dotenv": "^16.6.0",
     "express": "^5.1.0",
     "express-mysql-session": "^3.0.3",
+    "express-rate-limit": "^7.5.1",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",

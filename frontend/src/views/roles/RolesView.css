@@ -1,0 +1,152 @@
+.roles-view-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #581c87, #0f172a);
+  padding: 1rem;
+}
+
+.roles-view-content {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header styles */
+.header-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.header-icon {
+  padding: 0.75rem;
+  background-color: #9333ea;
+  border-radius: 9999px;
+}
+
+.shield-icon {
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.header-text {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.header-subtext {
+  color: #cbd5e1;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/* Server selection styles */
+.server-selection-container {
+  background-color: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  backdrop-filter: blur(12px);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.selection-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #334155;
+}
+
+.selection-title {
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.server-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.selection-description {
+  color: #94a3b8;
+}
+
+.selection-form-container {
+  padding: 1.5rem;
+}
+
+.selection-form {
+  display: flex;
+  gap: 1rem;
+}
+
+.server-input {
+  flex: 1;
+  background-color: #334155;
+  border: 1px solid #475569;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.server-input::placeholder {
+  color: #94a3b8;
+}
+
+.server-input:focus {
+  border-color: #8b5cf6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+}
+
+.submit-button {
+  background-color: #9333ea;
+  color: white;
+  padding: 0.5rem 2rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button:hover:not(.disabled-button) {
+  background-color: #7e22ce;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Role manager section */
+.role-manager-section {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
