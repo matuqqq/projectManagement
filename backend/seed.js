@@ -4,13 +4,26 @@ async function main() {
     console.log('Starting database seeding...');
 
     try {
+        // Create a sample user first
+        const user = await prisma.user.create({
+            data: {
+                email: "admin@example.com",
+                username: "admin",
+                password: "hashedpassword123", // In real app, this should be hashed
+                avatar: null,
+                bio: "System administrator"
+            }
+        });
+
+        console.log('Created user:', user.id);
+
         // Create sample servers
         const server1 = await prisma.server.create({
             data: {
                 name: "General Server",
                 description: "A general purpose Discord server",
                 isPublic: true,
-                ownerId: "user123" // You'll need to replace this with a real user ID
+                ownerId: user.id
             }
         });
 
@@ -19,7 +32,7 @@ async function main() {
                 name: "Gaming Hub",
                 description: "Server for gaming enthusiasts",
                 isPublic: true,
-                ownerId: "user123"
+                ownerId: user.id
             }
         });
 
@@ -28,7 +41,7 @@ async function main() {
                 name: "Study Group",
                 description: "Private study group server",
                 isPublic: false,
-                ownerId: "user123"
+                ownerId: user.id
             }
         });
 

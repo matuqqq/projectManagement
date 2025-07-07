@@ -15,46 +15,12 @@ export default function ChannelsView() {
 
   const fetchServers = async () => {
     try {
-      // For demo purposes, using mock data
-      // Replace this with actual API call when backend is configured
-      const mockServers = [
-        {
-          id: "1",
-          name: "General Server",
-          description: "A general purpose Discord server",
-          icon: null,
-          isPublic: true,
-          _count: { channels: 4, members: 12 }
-        },
-        {
-          id: "2",
-          name: "Gaming Hub",
-          description: "Server for gaming enthusiasts", 
-          icon: null,
-          isPublic: true,
-          _count: { channels: 4, members: 8 }
-        },
-        {
-          id: "3",
-          name: "Study Group",
-          description: "Private study group server",
-          icon: null,
-          isPublic: false,
-          _count: { channels: 3, members: 5 }
-        }
-      ]
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setServers(mockServers)
-      
-      // Uncomment below for real API call:
-      // const response = await fetch(`${API_URL}/servers`)
-      // if (!response.ok) {
-      //   throw new Error("Failed to fetch servers")
-      // }
-      // const data = await response.json()
-      // setServers(data.data)
+      const response = await fetch(`${API_URL}/servers`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch servers")
+      }
+      const data = await response.json()
+      setServers(data.data)
     } catch (error) {
       console.error("Error fetching servers:", error)
       setError(error.message)
@@ -68,50 +34,26 @@ export default function ChannelsView() {
     setError(null)
 
     try {
-      // Mock data based on server ID
-      const mockChannelsData = {
-        "1": [
-          { id: "1", name: "general", description: "General discussion", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 0 },
-          { id: "2", name: "announcements", description: "Server announcements", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 3 },
-          { id: "3", name: "random", description: "Random conversations", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 12 },
-          { id: "4", name: "private-chat", description: "Private discussion", isPrivate: true, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 1 },
-          { id: "5", name: "voice-general", description: "General voice chat", isPrivate: false, isVoice: true, createdAt: new Date().toISOString(), connectedUsers: 0 }
-        ],
-        "2": [
-          { id: "6", name: "gaming-general", description: "General gaming discussion", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 5 },
-          { id: "7", name: "minecraft", description: "Minecraft discussions", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 0 },
-          { id: "8", name: "valorant", description: "Valorant team coordination", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 8 },
-          { id: "9", name: "voice-gaming", description: "Gaming voice chat", isPrivate: false, isVoice: true, createdAt: new Date().toISOString(), connectedUsers: 3 }
-        ],
-        "3": [
-          { id: "10", name: "study-hall", description: "Main study discussion", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 2 },
-          { id: "11", name: "resources", description: "Study resources sharing", isPrivate: false, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 0 },
-          { id: "12", name: "homework-help", description: "Get help with homework", isPrivate: true, isVoice: false, createdAt: new Date().toISOString(), unreadCount: 7 }
-        ]
+      const response = await fetch(`${API_URL}/channels?serverId=${serverId}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch channels")
       }
+      const data = await response.json()
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800))
-      const channelsList = mockChannelsData[serverId] || []
-      setChannels(channelsList)
+      // Add mock unread counts and connected users for demo purposes
+      const channelsWithMockData = data.data.map((channel, index) => ({
+        ...channel,
+        unreadCount: channel.isVoice ? undefined : Math.floor(Math.random() * 10),
+        connectedUsers: channel.isVoice ? Math.floor(Math.random() * 5) : undefined
+      }))
+      
+      setChannels(channelsWithMockData)
       
       // Auto-select the first text channel when loading channels
-      const firstTextChannel = channelsList.find(channel => !channel.isVoice)
+      const firstTextChannel = channelsWithMockData.find(channel => !channel.isVoice)
       if (firstTextChannel) {
         setSelectedChannel(firstTextChannel)
       }
-      
-      // Uncomment below for real API call:
-      // const response = await fetch(`${API_URL}/channels?serverId=${serverId}`)
-      // if (!response.ok) {
-      //   throw new Error("Failed to fetch channels")
-      // }
-      // const data = await response.json()
-      // setChannels(data.data)
-      // const firstTextChannel = data.data.find(channel => !channel.isVoice)
-      // if (firstTextChannel) {
-      //   setSelectedChannel(firstTextChannel)
-      // }
     } catch (error) {
       console.error("Error fetching channels:", error)
       setError(error.message)
