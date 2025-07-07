@@ -14,6 +14,7 @@ import channels from "./routes/channels.routes.js";
 import members from "./routes/members.routes.js";
 import users from "./routes/users.routes.js";
 import directMessagesRoutes from "./routes/directMessages.routes.js";
+import servers from "./routes/servers.routes.js";
 
 const app = express();
 const API_PORT = process.env.PORT || 3001;
@@ -54,6 +55,7 @@ app.use("/api/channels", channels); // now you can use this as a reference for y
 app.use("/api/members", members);
 app.use("/api/user", (users));
 app.use("/api/direct-messages", directMessagesRoutes);
+app.use("/api/servers", servers);
 
 
 
