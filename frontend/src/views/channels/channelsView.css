@@ -196,6 +196,24 @@
   background-color: #34373c;
 }
 
+.channel-item.selected {
+  background-color: #404449;
+  color: #ffffff;
+}
+
+.channel-item.selected .channel-name {
+  color: #ffffff;
+}
+
+.channel-item.selected .channel-icon {
+  color: #ffffff;
+}
+
+.channel-item.selected .unread-badge {
+  background-color: #ffffff;
+  color: #23272a;
+}
+
 .channel-icon {
   width: 16px;
   height: 16px;
@@ -221,7 +239,48 @@
   width: 16px;
   height: 16px;
   color: #72767d;
+}
+
+.voice-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   margin-left: auto;
+}
+
+.connected-users {
+  font-size: 12px;
+  color: #b9bbbe;
+  background-color: #4f545c;
+  padding: 2px 6px;
+  border-radius: 12px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.unread-badge {
+  background-color: #f23f43;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: auto;
+  min-width: 16px;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .no-channels {
@@ -342,10 +401,18 @@
   color: #ffffff;
 }
 
+.channel-description {
+  font-size: 14px;
+  color: #72767d;
+  margin-left: 8px;
+  font-weight: 400;
+}
+
 .messages-area {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
+  transition: opacity 0.2s ease;
 }
 
 .welcome-message {
@@ -357,6 +424,53 @@
 .welcome-message h2 {
   color: #ffffff;
   margin-bottom: 8px;
+}
+
+.channel-description-detail {
+  color: #b9bbbe;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.voice-channel-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: rgba(88, 101, 242, 0.1);
+  border-radius: 4px;
+  color: #b9bbbe;
+}
+
+.voice-icon {
+  width: 16px;
+  height: 16px;
+  color: #5865f2;
+}
+
+.no-channel-selected {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-channel-content {
+  text-align: center;
+  color: #72767d;
+}
+
+.no-channel-content h3 {
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.no-channel-icon {
+  width: 48px;
+  height: 48px;
+  color: #4f545c;
+  margin: 0 auto 16px;
 }
 
 .no-content {
