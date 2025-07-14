@@ -1,5 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: '.env' });
+
+// Debug environment variables
+console.log('Environment variables loaded:');
+console.log('PORT:', process.env.PORT);
+console.log('SECRET exists:', !!process.env.SECRET);
+console.log('TOKEN_SECRET exists:', !!process.env.TOKEN_SECRET);
 
 import express from "express";
 import bodyParser from "body-parser";
