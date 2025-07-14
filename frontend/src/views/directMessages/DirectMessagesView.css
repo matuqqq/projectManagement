@@ -672,3 +672,63 @@
 .conversation-item.selected .last-message {
   color: #dcddde;
 }
+
+/* Auth Error */
+.auth-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  color: #72767d;
+}
+
+.auth-error h3 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+/* DM Error */
+.dm-error {
+  padding: 16px;
+  text-align: center;
+  color: #f04747;
+}
+
+.retry-btn {
+  background-color: #5865f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+  background-color: #4752c4;
+}
+
+/* No Conversations */
+.no-conversations {
+  padding: 32px 16px;
+  text-align: center;
+  color: #72767d;
+}
+
+.no-conversations-hint {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #96989d;
+}
+
+/* No Messages */
+.no-messages {
+  padding: 32px 16px;
+  text-align: center;
+  color: #72767d;
+  font-style: italic;
+}

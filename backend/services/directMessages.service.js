@@ -80,6 +80,7 @@ export default () => ({
 
     // Nuevo método para obtener conversaciones del usuario
     getUserConversations: async (userId) => {
+        try {
         // Obtener todos los mensajes donde el usuario es sender o receiver
         const messages = await prisma.directMessage.findMany({
             where: {
@@ -126,5 +127,9 @@ export default () => ({
         });
 
         return Array.from(conversationsMap.values());
+        } catch (error) {
+            console.error('Error in getUserConversations:', error);
+            throw new Error('Failed to fetch user conversations');
+        }
     }
 });

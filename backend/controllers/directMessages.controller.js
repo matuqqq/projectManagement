@@ -2,6 +2,11 @@ import directMessagesService from '../services/directMessages.service.js';
 
 const getMessages = async (req, res) => {
     const { userId1, userId2 } = req.params;
+    
+    if (!userId1 || !userId2) {
+        return res.status(400).json({ error: 'Both user IDs are required' });
+    }
+    
     try {
         const messages = await directMessagesService().getMessagesBetweenUsers(userId1, userId2);
         res.json(messages);
@@ -60,6 +65,11 @@ const deleteMessage = async (req, res) => {
 // Nuevo endpoint para obtener conversaciones del usuario
 const getUserConversations = async (req, res) => {
     const { userId } = req.params;
+    
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+    
     try {
         const conversations = await directMessagesService().getUserConversations(userId);
         res.json(conversations);
