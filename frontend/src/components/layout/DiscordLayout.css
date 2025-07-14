@@ -1,0 +1,362 @@
+/* Discord Layout */
+.discord-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #36393f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #dcddde;
+}
+
+/* Server Sidebar */
+.server-sidebar {
+  width: 72px;
+  background-color: #202225;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  border-right: 1px solid #1e2124;
+  justify-content: space-between;
+}
+
+.server-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+.server-item {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #36393f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  color: #96989d;
+}
+
+.server-item:hover {
+  border-radius: 16px;
+  background-color: #5865f2;
+  color: #ffffff;
+}
+
+.server-item.selected {
+  border-radius: 16px;
+  background-color: #5865f2;
+  color: #ffffff;
+}
+
+.server-item.selected::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 40px;
+  background-color: #ffffff;
+  border-radius: 0 2px 2px 0;
+}
+
+.server-item:hover::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s ease;
+}
+
+.server-item.selected:hover::before {
+  height: 40px;
+}
+
+/* DM Server Styling */
+.dm-server {
+  background-color: #5865f2;
+  color: #ffffff;
+}
+
+.dm-server:hover {
+  background-color: #4752c4;
+}
+
+.dm-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Server Icons */
+.server-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: border-radius 0.2s ease;
+}
+
+.server-item:hover .server-icon {
+  border-radius: 16px;
+}
+
+.server-icon-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  transition: border-radius 0.2s ease;
+}
+
+.server-item:hover .server-icon-placeholder {
+  border-radius: 16px;
+}
+
+/* Special Server Items */
+.add-server {
+  background-color: #36393f;
+  border: 2px dashed #4f545c;
+  color: #3ba55c;
+}
+
+.add-server:hover {
+  background-color: #3ba55c;
+  color: #ffffff;
+  border-color: #3ba55c;
+}
+
+.add-server-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.discover-server {
+  background-color: #36393f;
+  color: #3ba55c;
+}
+
+.discover-server:hover {
+  background-color: #3ba55c;
+  color: #ffffff;
+}
+
+.discover-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.download-app {
+  background-color: #36393f;
+  color: #3ba55c;
+}
+
+.download-app:hover {
+  background-color: #3ba55c;
+  color: #ffffff;
+}
+
+.download-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Server Divider */
+.server-divider {
+  width: 32px;
+  height: 2px;
+  background-color: #2f3136;
+  border-radius: 1px;
+  margin: 4px 0;
+}
+
+/* Server Sidebar Bottom */
+.server-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Main Layout */
+.main-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* User Panel */
+.user-panel {
+  height: 52px;
+  background-color: #292b2f;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #1e2124;
+  position: absolute;
+  bottom: 0;
+  left: 72px;
+  right: 0;
+  z-index: 100;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5865f2;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5865f2;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-status {
+  font-size: 12px;
+  color: #72767d;
+}
+
+.user-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.control-icon {
+  width: 20px;
+  height: 20px;
+  color: #b9bbbe;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.control-icon:hover {
+  background-color: #34373c;
+  color: #dcddde;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .server-sidebar {
+    width: 60px;
+  }
+  
+  .server-item {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .server-icon-placeholder {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  .user-panel {
+    left: 60px;
+  }
+}
+
+/* Animations */
+@keyframes serverPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.server-item.selected {
+  animation: serverPulse 0.3s ease-in-out;
+}
+
+/* Tooltip styles (opcional) */
+.server-item::after {
+  content: attr(title);
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #18191c;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+}
+
+.server-item:hover::after {
+  opacity: 1;
+  transition-delay: 0.5s;
+}
+
+/* Hide tooltips on mobile */
+@media (max-width: 768px) {
+  .server-item::after {
+    display: none;
+  }
+}

@@ -6,6 +6,7 @@ const getMessages = async (req, res) => {
         const messages = await directMessagesService().getMessagesBetweenUsers(userId1, userId2);
         res.json(messages);
     } catch (err) {
+        console.error('Error in getMessages:', err);
         res.status(500).json({ error: 'Error fetching messages' });
     }
 };
@@ -25,6 +26,7 @@ const createMessage = async (req, res) => {
         const message = await directMessagesService().createDirectMessage(senderId, receiverId, content);
         res.status(201).json(message);
     } catch (err) {
+        console.error('Error in createMessage:', err);
         res.status(500).json({ error: 'Error sending message' });
     }
 };
@@ -39,6 +41,7 @@ const updateMessage = async (req, res) => {
         const updated = await directMessagesService().updateDirectMessage(id, content);
         res.json(updated);
     } catch (err) {
+        console.error('Error in updateMessage:', err);
         res.status(404).json({ error: 'Mensaje no encontrado o error actualizando.' });
     }
 };
@@ -49,13 +52,26 @@ const deleteMessage = async (req, res) => {
         await directMessagesService().deleteDirectMessage(id);
         res.json({ message: "Mensaje eliminado correctamente." });
     } catch (err) {
+        console.error('Error in deleteMessage:', err);
         res.status(404).json({ error: 'Mensaje no encontrado o error eliminando.' });
     }
 };
 
+// Nuevo endpoint para obtener conversaciones del usuario
+const getUserConversations = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const conversations = await directMessagesService().getUserConversations(userId);
+        res.json(conversations);
+    } catch (err) {
+        console.error('Error in getUserConversations:', err);
+        res.status(500).json({ error: 'Error fetching conversations' });
+    }
+};
 export default {
     getMessages,
     createMessage,
     updateMessage,
-    deleteMessage
+    deleteMessage,
+    getUserConversations
 };

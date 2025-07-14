@@ -5,6 +5,8 @@ import LoginView from "./views/loginView/loginView";
 import HomeView from "./views/homeView/homeView";
 import ChannelsView from "./views/channels/channelsView";
 import RolesView from "./views/roles/RolesView";
+import DirectMessagesView from "./views/directMessages/DirectMessagesView";
+import DiscordLayout from "./components/layout/DiscordLayout";
 
 function App() {
   return (
@@ -13,7 +15,16 @@ function App() {
         <Route path="/" element={<LoginView />} />
         <Route path="/register" element={<RegisterView />} />
         <Route path="/home" element={<HomeView />} />
-        <Route path="/channels" element={<ChannelsView />} />
+        <Route path="/channels" element={
+          <DiscordLayout>
+            <ChannelsView />
+          </DiscordLayout>
+        } />
+        <Route path="/direct-messages" element={
+          <DiscordLayout>
+            <DirectMessagesView />
+          </DiscordLayout>
+        } />
         <Route path="/roles" element={<RolesView />} />
       </Routes>
     </Router>
