@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "sqlite"
   url      =  env("DATABASE_URL")
 }
 
@@ -37,7 +37,6 @@ model Server {
   name        String
   description String?
   icon        String?
-  isPublic    Boolean        @default(true)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   ownerId     String
@@ -57,7 +56,6 @@ model Channel {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   isPrivate   Boolean        @default(false)
-  isVoice     Boolean        @default(false)
 
   messages    Message[]
   admins      User[]         @relation("ChannelAdmins")
