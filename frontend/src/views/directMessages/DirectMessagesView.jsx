@@ -15,10 +15,10 @@ import {
   Check,
   X
 } from 'lucide-react';
+import directMessagesService from '../../services/directMessages.service';
 import './DirectMessagesView.css';
 
 const DirectMessagesView = () => {
-  const API_URL = process.env.REACT_APP_URLAPI;
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -32,59 +32,28 @@ const DirectMessagesView = () => {
   const messagesEndRef = useRef(null);
   const messageInputRef = useRef(null);
 
-  // Mock user data - en una app real vendría del contexto de autenticación
-  const currentUser = {
-    id: "user1",
-    username: "CurrentUser",
-    avatar: null
+  // Obtener usuario actual del localStorage
+  const getCurrentUser = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      return JSON.parse(userData);
+    }
+    return null;
   };
 
-  // Mock conversations data - esto vendría de una API real
-  const mockConversations = [
-    {
-      id: "conv1",
-      otherUser: {
-        id: "user2",
-        username: "Alice",
-        avatar: null,
-        status: "online"
-      },
-      lastMessage: "Hey, how are you?",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-      unreadCount: 2
-    },
-    {
-      id: "conv2",
-      otherUser: {
-        id: "user3",
-        username: "Bob",
-        avatar: null,
-        status: "away"
-      },
-      lastMessage: "Thanks for the help!",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-      unreadCount: 0
-    },
-    {
-      id: "conv3",
-      otherUser: {
-        id: "user4",
-        username: "Charlie",
-        avatar: null,
-        status: "offline"
-      },
-      lastMessage: "See you tomorrow",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      unreadCount: 1
-    }
-  ];
+  const currentUser = getCurrentUser();
 
   useEffect(() => {
-    loadConversations();
+    if (currentUser) {
+      loadConversations();
+    } else {
+      setError('User not authenticated');
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (selectedConversation) {
+    if (selectedConversation && currentUser) {
       loadMessages(currentUser.id, selectedConversation.otherUser.id);
     }
   }, [selectedConversation]);
@@ -94,20 +63,22 @@ const DirectMessagesView = () => {
   }, [messages]);
 
   const loadConversations = async () => {
+    if (!currentUser) return;
+
     try {
       setIsLoading(true);
-      // En una app real, esto sería una llamada a la API
-      // const response = await fetch(`${API_URL}/direct-messages/conversations`);
-      // const data = await response.json();
+      setError(null);
       
-      // Por ahora usamos datos mock
-      setTimeout(() => {
-        setConversations(mockConversations);
-        setIsLoading(false);
-      }, 500);
+      const token = localStorage.getItem('accessToken');
+      const conversationsData = await directMessagesService.getUserConversations(currentUser.id, token);
+      
+      setConversations(conversationsData);
     } catch (error) {
       console.error('Error loading conversations:', error);
       setError('Failed to load conversations');
+      // No usar datos mock, mostrar error real
+      setConversations([]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -115,55 +86,19 @@ const DirectMessagesView = () => {
   const loadMessages = async (userId1, userId2) => {
     try {
       setIsLoadingMessages(true);
+      setError(null);
+      
       const token = localStorage.getItem('accessToken');
+      const messagesData = await directMessagesService.getMessagesBetweenUsers(userId1, userId2, token);
       
-      const response = await fetch(`${API_URL}/direct-messages/${userId1}/${userId2}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load messages');
-      }
-
-      const data = await response.json();
-      setMessages(data);
+      setMessages(messagesData);
       
-      // Mark conversation as read
+      // Marcar conversación como leída
       markConversationAsRead(selectedConversation.id);
     } catch (error) {
       console.error('Error loading messages:', error);
       setError('Failed to load messages');
-      // Use mock data for demo
-      const mockMessages = [
-        {
-          id: "msg1",
-          content: "Hey, how are you doing?",
-          senderId: selectedConversation.otherUser.id,
-          receiverId: currentUser.id,
-          createdAt: new Date(Date.now() - 1000 * 60 * 10),
-          read: true
-        },
-        {
-          id: "msg2",
-          content: "I'm doing great! Thanks for asking. How about you?",
-          senderId: currentUser.id,
-          receiverId: selectedConversation.otherUser.id,
-          createdAt: new Date(Date.now() - 1000 * 60 * 8),
-          read: true
-        },
-        {
-          id: "msg3",
-          content: "That's awesome! I'm doing well too. Working on some new projects.",
-          senderId: selectedConversation.otherUser.id,
-          receiverId: currentUser.id,
-          createdAt: new Date(Date.now() - 1000 * 60 * 5),
-          read: false
-        }
-      ];
-      setMessages(mockMessages);
+      setMessages([]);
     } finally {
       setIsLoadingMessages(false);
     }
@@ -171,75 +106,35 @@ const DirectMessagesView = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedConversation) return;
+    if (!newMessage.trim() || !selectedConversation || !currentUser) return;
+
+    const messageData = {
+      senderId: currentUser.id,
+      receiverId: selectedConversation.otherUser.id,
+      content: newMessage.trim()
+    };
 
     try {
       const token = localStorage.getItem('accessToken');
-      const messageData = {
-        senderId: currentUser.id,
-        receiverId: selectedConversation.otherUser.id,
-        content: newMessage.trim()
-      };
-
-      const response = await fetch(`${API_URL}/direct-messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(messageData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const sentMessage = await response.json();
+      const sentMessage = await directMessagesService.sendDirectMessage(messageData, token);
       
-      // Add message to local state
+      // Agregar mensaje a la lista local
       setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
       
-      // Update conversation's last message
+      // Actualizar último mensaje de la conversación
       updateConversationLastMessage(selectedConversation.id, sentMessage);
       
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // For demo purposes, add message locally even if API fails
-      const mockMessage = {
-        id: `msg_${Date.now()}`,
-        content: newMessage.trim(),
-        senderId: currentUser.id,
-        receiverId: selectedConversation.otherUser.id,
-        createdAt: new Date(),
-        read: false
-      };
-      
-      setMessages(prev => [...prev, mockMessage]);
-      setNewMessage('');
-      updateConversationLastMessage(selectedConversation.id, mockMessage);
+      setError('Failed to send message');
     }
   };
 
   const editMessage = async (messageId, newContent) => {
     try {
       const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_URL}/direct-messages/${messageId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content: newContent })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to edit message');
-      }
-
-      const updatedMessage = await response.json();
+      const updatedMessage = await directMessagesService.updateMessage(messageId, newContent, token);
       
       setMessages(prev => prev.map(msg => 
         msg.id === messageId ? { ...msg, content: newContent } : msg
@@ -249,12 +144,7 @@ const DirectMessagesView = () => {
       setEditContent('');
     } catch (error) {
       console.error('Error editing message:', error);
-      // For demo, update locally
-      setMessages(prev => prev.map(msg => 
-        msg.id === messageId ? { ...msg, content: newContent } : msg
-      ));
-      setEditingMessage(null);
-      setEditContent('');
+      setError('Failed to edit message');
     }
   };
 
@@ -263,24 +153,12 @@ const DirectMessagesView = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
+      await directMessagesService.deleteMessage(messageId, token);
       
-      const response = await fetch(`${API_URL}/direct-messages/${messageId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete message');
-      }
-
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
     } catch (error) {
       console.error('Error deleting message:', error);
-      // For demo, delete locally
-      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      setError('Failed to delete message');
     }
   };
 
@@ -350,6 +228,18 @@ const DirectMessagesView = () => {
     }
   };
 
+  // Verificar autenticación
+  if (!currentUser) {
+    return (
+      <div className="dm-layout">
+        <div className="auth-error">
+          <h3>Authentication Required</h3>
+          <p>Please log in to access direct messages.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dm-layout">
       {/* DM Sidebar */}
@@ -378,43 +268,59 @@ const DirectMessagesView = () => {
               <div className="loading-spinner"></div>
               <span>Loading conversations...</span>
             </div>
+          ) : error && conversations.length === 0 ? (
+            <div className="dm-error">
+              <p>Error loading conversations</p>
+              <button onClick={loadConversations} className="retry-btn">
+                Retry
+              </button>
+            </div>
           ) : (
             <div className="conversations-list">
-              {filteredConversations.map((conversation) => (
-                <div
-                  key={conversation.id}
-                  className={`conversation-item ${selectedConversation?.id === conversation.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedConversation(conversation)}
-                >
-                  <div className="conversation-avatar">
-                    {conversation.otherUser.avatar ? (
-                      <img src={conversation.otherUser.avatar} alt={conversation.otherUser.username} />
-                    ) : (
-                      <div className="avatar-placeholder">
-                        {conversation.otherUser.username.charAt(0).toUpperCase()}
+              {filteredConversations.length === 0 ? (
+                <div className="no-conversations">
+                  <p>No conversations found</p>
+                  <p className="no-conversations-hint">Start a new conversation to get started!</p>
+                </div>
+              ) : (
+                filteredConversations.map((conversation) => (
+                  <div
+                    key={conversation.id}
+                    className={`conversation-item ${selectedConversation?.id === conversation.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedConversation(conversation)}
+                  >
+                    <div className="conversation-avatar">
+                      {conversation.otherUser.avatar ? (
+                        <img src={conversation.otherUser.avatar} alt={conversation.otherUser.username} />
+                      ) : (
+                        <div className="avatar-placeholder">
+                          {conversation.otherUser.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div 
+                        className="status-indicator"
+                        style={{ backgroundColor: getStatusColor(conversation.otherUser.status || 'offline') }}
+                      />
+                    </div>
+                    <div className="conversation-info">
+                      <div className="conversation-header">
+                        <span className="username">{conversation.otherUser.username}</span>
+                        <span className="last-message-time">
+                          {conversation.lastMessageTime ? formatTime(conversation.lastMessageTime) : ''}
+                        </span>
+                      </div>
+                      <div className="last-message">
+                        {conversation.lastMessage || 'No messages yet'}
+                      </div>
+                    </div>
+                    {conversation.unreadCount > 0 && (
+                      <div className="unread-badge">
+                        {conversation.unreadCount}
                       </div>
                     )}
-                    <div 
-                      className="status-indicator"
-                      style={{ backgroundColor: getStatusColor(conversation.otherUser.status) }}
-                    />
                   </div>
-                  <div className="conversation-info">
-                    <div className="conversation-header">
-                      <span className="username">{conversation.otherUser.username}</span>
-                      <span className="last-message-time">{formatTime(conversation.lastMessageTime)}</span>
-                    </div>
-                    <div className="last-message">
-                      {conversation.lastMessage}
-                    </div>
-                  </div>
-                  {conversation.unreadCount > 0 && (
-                    <div className="unread-badge">
-                      {conversation.unreadCount}
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
         </div>
@@ -431,7 +337,7 @@ const DirectMessagesView = () => {
                 <span className="chat-username">{selectedConversation.otherUser.username}</span>
                 <div 
                   className="user-status-dot"
-                  style={{ backgroundColor: getStatusColor(selectedConversation.otherUser.status) }}
+                  style={{ backgroundColor: getStatusColor(selectedConversation.otherUser.status || 'offline') }}
                 />
               </div>
               <div className="chat-actions">
@@ -465,68 +371,74 @@ const DirectMessagesView = () => {
                     <p>This is the beginning of your direct message history with <strong>@{selectedConversation.otherUser.username}</strong>.</p>
                   </div>
 
-                  {messages.map((message) => (
-                    <div key={message.id} className={`message ${message.senderId === currentUser.id ? 'own-message' : ''}`}>
-                      <div className="message-avatar">
-                        {message.senderId === currentUser.id ? (
-                          <div className="avatar-placeholder small">
-                            {currentUser.username.charAt(0).toUpperCase()}
-                          </div>
-                        ) : (
-                          selectedConversation.otherUser.avatar ? (
-                            <img src={selectedConversation.otherUser.avatar} alt={selectedConversation.otherUser.username} />
-                          ) : (
+                  {messages.length === 0 ? (
+                    <div className="no-messages">
+                      <p>No messages yet. Start the conversation!</p>
+                    </div>
+                  ) : (
+                    messages.map((message) => (
+                      <div key={message.id} className={`message ${message.senderId === currentUser.id ? 'own-message' : ''}`}>
+                        <div className="message-avatar">
+                          {message.senderId === currentUser.id ? (
                             <div className="avatar-placeholder small">
-                              {selectedConversation.otherUser.username.charAt(0).toUpperCase()}
+                              {currentUser.username.charAt(0).toUpperCase()}
                             </div>
-                          )
-                        )}
-                      </div>
-                      <div className="message-content">
-                        <div className="message-header">
-                          <span className="message-author">
-                            {message.senderId === currentUser.id ? currentUser.username : selectedConversation.otherUser.username}
-                          </span>
-                          <span className="message-timestamp">
-                            {formatTime(message.createdAt)}
-                          </span>
+                          ) : (
+                            selectedConversation.otherUser.avatar ? (
+                              <img src={selectedConversation.otherUser.avatar} alt={selectedConversation.otherUser.username} />
+                            ) : (
+                              <div className="avatar-placeholder small">
+                                {selectedConversation.otherUser.username.charAt(0).toUpperCase()}
+                              </div>
+                            )
+                          )}
                         </div>
-                        {editingMessage === message.id ? (
-                          <form onSubmit={handleEditSubmit} className="edit-message-form">
-                            <input
-                              type="text"
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="edit-message-input"
-                              autoFocus
-                            />
-                            <div className="edit-actions">
-                              <button type="submit" className="edit-save-btn">
-                                <Check size={14} />
-                              </button>
-                              <button type="button" onClick={cancelEditing} className="edit-cancel-btn">
-                                <X size={14} />
-                              </button>
-                            </div>
-                          </form>
-                        ) : (
-                          <div className="message-text-container">
-                            <p className="message-text">{message.content}</p>
-                            {message.senderId === currentUser.id && (
-                              <div className="message-actions">
-                                <button onClick={() => startEditingMessage(message)} className="message-action-btn">
-                                  <Edit size={14} />
+                        <div className="message-content">
+                          <div className="message-header">
+                            <span className="message-author">
+                              {message.senderId === currentUser.id ? currentUser.username : selectedConversation.otherUser.username}
+                            </span>
+                            <span className="message-timestamp">
+                              {formatTime(message.createdAt)}
+                            </span>
+                          </div>
+                          {editingMessage === message.id ? (
+                            <form onSubmit={handleEditSubmit} className="edit-message-form">
+                              <input
+                                type="text"
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                className="edit-message-input"
+                                autoFocus
+                              />
+                              <div className="edit-actions">
+                                <button type="submit" className="edit-save-btn">
+                                  <Check size={14} />
                                 </button>
-                                <button onClick={() => deleteMessage(message.id)} className="message-action-btn delete">
-                                  <Trash2 size={14} />
+                                <button type="button" onClick={cancelEditing} className="edit-cancel-btn">
+                                  <X size={14} />
                                 </button>
                               </div>
-                            )}
-                          </div>
-                        )}
+                            </form>
+                          ) : (
+                            <div className="message-text-container">
+                              <p className="message-text">{message.content}</p>
+                              {message.senderId === currentUser.id && (
+                                <div className="message-actions">
+                                  <button onClick={() => startEditingMessage(message)} className="message-action-btn">
+                                    <Edit size={14} />
+                                  </button>
+                                  <button onClick={() => deleteMessage(message.id)} className="message-action-btn delete">
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
               )}

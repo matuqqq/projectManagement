@@ -5,7 +5,13 @@ class DirectMessagesService {
   async getMessagesBetweenUsers(userId1, userId2, token) {
     try {
       const response = await sendGet(`/direct-messages/${userId1}/${userId2}`, {}, token);
-      return response;
+      
+      // Verificar si la respuesta es exitosa
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to fetch messages');
+      }
     } catch (error) {
       console.error('Error fetching messages:', error);
       throw error;
@@ -15,8 +21,23 @@ class DirectMessagesService {
   // Enviar un nuevo mensaje directo
   async sendDirectMessage(messageData, token) {
     try {
-      const response = await sendPost('/direct-messages', messageData, token);
-      return response;
+      // Validar datos antes de enviar
+      const validation = this.validateMessageContent(messageData.content);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
+      const response = await sendPost('/direct-messages', {
+        senderId: messageData.senderId,
+        receiverId: messageData.receiverId,
+        content: validation.content
+      }, token);
+
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to send message');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
@@ -26,8 +47,21 @@ class DirectMessagesService {
   // Actualizar un mensaje existente
   async updateMessage(messageId, content, token) {
     try {
-      const response = await sendPut(`/direct-messages/${messageId}`, { content }, token);
-      return response;
+      // Validar contenido
+      const validation = this.validateMessageContent(content);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
+      const response = await sendPut(`/direct-messages/${messageId}`, { 
+        content: validation.content 
+      }, token);
+
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to update message');
+      }
     } catch (error) {
       console.error('Error updating message:', error);
       throw error;
@@ -38,19 +72,29 @@ class DirectMessagesService {
   async deleteMessage(messageId, token) {
     try {
       const response = await sendDelete(`/direct-messages/${messageId}`, token);
-      return response;
+      
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to delete message');
+      }
     } catch (error) {
       console.error('Error deleting message:', error);
       throw error;
     }
   }
 
-  // Obtener conversaciones del usuario (esto requeriría un endpoint adicional en el backend)
+  // Obtener conversaciones del usuario
   async getUserConversations(userId, token) {
     try {
-      // Este endpoint no existe en el backend actual, pero sería útil implementarlo
       const response = await sendGet(`/direct-messages/conversations/${userId}`, {}, token);
-      return response;
+      
+      if (response && !response.error) {
+        // Procesar las conversaciones para agregar información adicional
+        return this.processConversationsForUI(response, userId);
+      } else {
+        throw new Error(response?.error || 'Failed to fetch conversations');
+      }
     } catch (error) {
       console.error('Error fetching conversations:', error);
       throw error;
@@ -60,21 +104,29 @@ class DirectMessagesService {
   // Marcar mensajes como leídos
   async markMessagesAsRead(userId1, userId2, token) {
     try {
-      // Este endpoint tampoco existe, pero sería útil para marcar mensajes como leídos
-      const response = await sendPut(`/direct-messages/mark-read`, { userId1, userId2 }, token);
+      const response = await sendPut('/direct-messages/mark-read', { 
+        userId1, 
+        userId2 
+      }, token);
+      
       return response;
     } catch (error) {
       console.error('Error marking messages as read:', error);
-      throw error;
+      // No lanzar error aquí ya que es una funcionalidad opcional
+      return null;
     }
   }
 
   // Buscar usuarios para iniciar conversaciones
   async searchUsers(query, token) {
     try {
-      // Este endpoint requeriría implementación en el backend
       const response = await sendGet('/users/search', { query }, token);
-      return response;
+      
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to search users');
+      }
     } catch (error) {
       console.error('Error searching users:', error);
       throw error;
@@ -85,11 +137,28 @@ class DirectMessagesService {
   async getUserInfo(userId, token) {
     try {
       const response = await sendGet(`/user/${userId}`, {}, token);
-      return response;
+      
+      if (response && !response.error) {
+        return response;
+      } else {
+        throw new Error(response?.error || 'Failed to fetch user info');
+      }
     } catch (error) {
       console.error('Error fetching user info:', error);
       throw error;
     }
+  }
+
+  // Procesar conversaciones para la UI
+  processConversationsForUI(conversations, currentUserId) {
+    return conversations.map(conversation => ({
+      ...conversation,
+      // Agregar información adicional si es necesario
+      formattedLastMessageTime: conversation.lastMessageTime ? 
+        this.formatMessageTime(conversation.lastMessageTime) : '',
+      // Calcular mensajes no leídos (esto requeriría lógica adicional en el backend)
+      unreadCount: conversation.unreadCount || 0
+    }));
   }
 
   // Formatear fecha para mostrar en la UI
@@ -182,6 +251,37 @@ class DirectMessagesService {
         day: 'numeric' 
       });
     }
+  }
+
+  // Manejar errores de red
+  handleNetworkError(error) {
+    if (error.message === 'Network Error' || error.code === 'NETWORK_ERROR') {
+      return 'Network connection failed. Please check your internet connection.';
+    }
+    
+    if (error.message === 'Request timeout') {
+      return 'Request timed out. Please try again.';
+    }
+    
+    return error.message || 'An unexpected error occurred';
+  }
+
+  // Verificar si el usuario está autenticado
+  isAuthenticated() {
+    const token = localStorage.getItem('accessToken');
+    const user = localStorage.getItem('user');
+    return !!(token && user);
+  }
+
+  // Obtener token de autenticación
+  getAuthToken() {
+    return localStorage.getItem('accessToken');
+  }
+
+  // Obtener usuario actual
+  getCurrentUser() {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
   }
 }
 
